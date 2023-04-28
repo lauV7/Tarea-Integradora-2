@@ -23,7 +23,7 @@ public class Main{
             System.out.println("3. Registrar cápsula");
             System.out.println("4. Aprobar cápsula");
             System.out.println("5. Publicar cápsula");
-            System.out.println("6. Salir");
+            System.out.println("0. Salir");
 
             System.out.print("Ingrese la opción deseada: ");
             int option = reader.nextInt();
