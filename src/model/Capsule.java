@@ -1,126 +1,133 @@
 package model;
 
+import java.util.Calendar;
 
-
-public class Capsule {
-    private int id;
+public class Capsule{
+    private String id;
     private String description;
-    private String type;
+    private TypeCapsule type;
     private String collaboratorName;
     private String collaboratorJob;
     private String lessonLearned;
+    private boolean approved;
+    private String wordsWithHashtag;
+    private boolean publishedState;
+    private Calendar approvalDate;
+    private boolean postStatus;
 
-    /**
-    *
-    *Constructs a new Capsule object with the specified parameters.
-    *@param id the unique identifier of the Capsule
-    *@param description a brief description of the Capsule
-    *@param type the type of the Capsule
-    *@param collaboratorName the name of the collaborator who created the Capsule
-    *@param collaboratorJob the job position of the collaborator who created the Capsule
-    *@param lessonLearned a summary of the lessons learned from the event or outcome that the Capsule represents
-    */
-    public Capsule(int id, String description, String type, String collaboratorName, String collaboratorJob, String lessonLearned) {
+
+    public Capsule(String id, String description, TypeCapsule type, String collaboratorName, String collaboratorJob,  String lessonLearned, String wordsWithHashtag){
         this.id = id;
         this.description = description;
         this.type = type;
         this.collaboratorName = collaboratorName;
         this.collaboratorJob = collaboratorJob;
         this.lessonLearned = lessonLearned;
+        this.approved = false;
+        this.wordsWithHashtag = wordsWithHashtag;
+        this.publishedState = false;
+        this.postStatus = false;
         
     }
 
-   
-    /**
-    * Returns the id of the capsule.
-    * 
-    * @return the id of the capsule
-    */
-    public int getId() {
+ 
+    public String getId() {
         return id;
     }
 
-    /**
-     * Returns the description of the capsule.
-     * 
-     * @return the description of the capsule
-     */
+
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Returns the type of the capsule.
-     * 
-     * @return the type of the capsule
-     */
-    public String getType() {
+
+    public TypeCapsule getType() {
         return type;
     }
 
 
-    /**
-     * Returns the name of the collaborator who created the capsule.
-     * 
-     * @return the name of the collaborator who created the capsule
-     */
     public String getCollaboratorName() {
         return collaboratorName;
     }
 
     
-        
-    /**
-     * Returns the job title of the collaborator who created the capsule.
-     * 
-     * @return the job title of the collaborator who created the capsule
-     */
     public String getCollaboratorJob() {
         return collaboratorJob;
     }
 
 
-    /**
-     * Returns the lesson learned from the capsule.
-     * 
-     * @return the lesson learned from the capsule
-     */
     public String getLessonLearned() {
         return lessonLearned;
     }
 
+    public boolean getApproved() {
+        return this.approved;
+    }
 
-    
-    /**
-     * Returns a string representation of the capsule, including its id, description, type,
-     * collaborator name and job title, and lesson learned.
-     * 
-     * @return a string representation of the capsule
-     */
-    public String toString() {
-        return "Capsule #" + id + ": " +
-                "Description: " + description +
-                ", Type: " + type +
-                ", Collaborator: " + collaboratorName + " (" + collaboratorJob + ")" +
-                ", Lesson learned: " + lessonLearned;
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public Calendar getApprovalDate() {
+        return approvalDate;
+    }
+
+
+    public void setApprovalDate(Calendar approvalDate) {
+        this.approvalDate = approvalDate;
+    }
+
+    public boolean getPublishedState() {
+        return publishedState;
+    }
+
+
+    public void setPublishedState(boolean publishedState) {
+        this.publishedState = publishedState;
+    }
+
+    public boolean isPostStatus() {
+        return postStatus;
+    }
+
+
+    public void setPostStatus(boolean postStatus) {
+        this.postStatus = postStatus;
+    }
+
+    public String getWordsWithHashtag() {
+        return wordsWithHashtag;
+    }
+
+
+    public void setWordsWithHashtag(String wordsWithHashtag) {
+        this.wordsWithHashtag = wordsWithHashtag;
+    }
+
+
+
+
+    public String searchCapsuleByHashtag(String wordsWithHashtag){
+        String msg = " ";
+        // keyWords (string)
+        // keyWordsArray[] = keywords.split("#")
+        // 
+        String[] keywordsSelected = wordsWithHashtag.split("#");
+        for(int i = 0; i < keywordsSelected.length; i++){
+            if(keywordsSelected[i].equals(wordsWithHashtag)){
+                msg = lessonLearned;
+            }
+        }return msg;
+    }
+
+
+    public String toString(){
+        return "Lesson learned: " + lessonLearned;
     }
 
     
-    /**
-     * Sets the approval status of the capsule.
-     * 
-     * @param approved a boolean value indicating whether the capsule is approved or not
-     */
-    public void setApproved(String string) {
-    }
+   
 
-
-    /**
-     * Returns the approval status of the capsule.
-     * 
-     * @return a boolean value indicating whether the capsule is approved or not
-     */
-    public Object getApproved() {
-        return null;
-    }
+    
 }

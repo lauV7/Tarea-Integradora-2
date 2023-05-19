@@ -1,242 +1,156 @@
 package model;
 
+import java.util.Calendar;
 
-    /**
-    *A Stage represents a phase of a project, consisting of one or more Capsules.
-    */
-
-public class Stage {
+public class Stage{
+    
+    private static final int SIZE1 = 50;
     private String name;
     private boolean active;
-    private int plannedStartDate;
-    private int plannedEndDate;
-    private int actualStartDate;
-    private int actualEndDate;
+    private Calendar plannedStartDate;
+    private Calendar plannedEndDate;
+    private Calendar actualStartDate;
+    private Calendar actualEndDate;
     private boolean approved;
     private Capsule[] capsules;
     
 
-    private int numCapsules;
-
-    /**
-    *
-    *Constructs a new Stage with the given name and active status.
-    *@param name The name of the Stage.
-    *@param active Whether the Stage is currently active or not.
-    */
-    public Stage(String name, boolean active) {
+    public Stage(String name, Calendar plannedStartDate, Calendar plannedEndDate, Calendar actualStartDate){
         this.name = name;
-        this.active = active;
+        this.active = false;
         this.approved = false;
-        this.plannedStartDate = 0;
-        this.plannedEndDate = 0;
-        this.actualStartDate = 0;
-        this.actualEndDate = 0;
-        this.capsules = new Capsule[50];
-        this.numCapsules = 0;
+        this.plannedStartDate = plannedStartDate;
+        this.actualStartDate = actualStartDate;
+        this.plannedEndDate = plannedEndDate;
+        this.capsules = new Capsule[SIZE1];
+
     }
 
-    /**
-    *
-    *Constructs a new Stage with the given name and inactive status.
-    *@param name The name of the Stage.
-    */
-    public Stage(String name) {
-        this(name, false);
-    }
-
-    /**
-    *
-    *Returns the name of the Stage.
-    *@return The name of the Stage.
-    */
-    public String getName() {
+    public String getName(){
         return this.name;
     }
 
-    /**
-    *
-    *Returns whether the Stage is currently active or not.
-    *@return Whether the Stage is currently active or not.
-    */
-    public boolean isActive() {
+    public boolean getActive(){
         return this.active;
     }
 
 
-    /**
-    *
-    *Sets whether the Stage is currently active or not.
-    *@param active Whether the Stage is currently active or not.
-    */
-    public void setActive(boolean active) {
+    public void setActive(boolean active){
         this.active = active;
     }
 
-
-    /**
-    *
-    *Returns the planned start date of the Stage.
-    *@return The planned start date of the Stage.
-    */
-    public int getPlannedStartDate() {
+    
+    public Calendar getPlannedStartDate(){
         return this.plannedStartDate;
     }
 
-
-    /**
-    *
-    *Sets the planned start date of the Stage.
-    *@param plannedStartDate The planned start date of the Stage.
-    */
-    public void setPlannedStartDate(int plannedStartDate) {
+    public void setPlannedStartDate(Calendar plannedStartDate){
         this.plannedStartDate = plannedStartDate;
     }
 
-
-    /**
-    *
-    *Returns the planned end date of the Stage.
-    *@return The planned end date of the Stage.
-    */
-    public int getPlannedEndDate() {
+   
+    public Calendar getPlannedEndDate(){
         return this.plannedEndDate;
     }
 
 
-    /**
-    *
-    Sets the planned end date of the Stage.
-    *@param plannedEndDate The planned end date of the Stage.
-    */
-    public void setPlannedEndDate(int plannedEndDate) {
+    public void setPlannedEndDate(Calendar plannedEndDate){
         this.plannedEndDate = plannedEndDate;
     }
 
 
-    /**
-     * Returns the actual start date of the stage.
-     *
-     * @return the actual start date of the stage
-     */
-    public int getActualStartDate() {
+    public Calendar getActualStartDate(){
         return this.actualStartDate;
     }
 
-
-        
-    /**
-     * Sets the actual start date of the stage.
-     *
-     * @param actualStartDate the actual start date of the stage
-    */
-    public void setActualStartDate(int actualStartDate) {
+   
+    public void setActualStartDate(Calendar actualStartDate){
         this.actualStartDate = actualStartDate;
     }
 
-
     
-    /**
-     * Returns the actual end date of the stage.
-     *
-     * @return the actual end date of the stage
-     */
-    public int getActualEndDate() {
+    public Calendar getActualEndDate(){
         return this.actualEndDate;
     }
 
-
-        
-    /**
-     * Sets the actual end date of the stage.
-     *
-     * @param actualEndDate the actual end date of the stage
-     */
-    public void setActualEndDate(int actualEndDate) {
+    
+    public void setActualEndDate(Calendar actualEndDate){
         this.actualEndDate = actualEndDate;
     }
 
 
-        
-    /**
-     * Returns whether the stage has been approved or not.
-     *
-     * @return true if the stage has been approved, false otherwise
-     */
-    public boolean isApproved() {
+    public boolean isApproved(){
         return this.approved;
     }
 
-
-    /**
-     * Sets whether the stage has been approved or not.
-     *
-     * @param approved true if the stage has been approved, false otherwise
-     */
-    public void setApproved(boolean approved) {
+   
+    public void setApproved(boolean approved){
         this.approved = approved;
     }
 
-    /**
-     * Returns the capsules associated with the stage.
-     *
-     * @return an array of capsules associated with the stage
-     */
     public Capsule[] getCapsules() {
         return capsules;
     }
 
 
-    
-    /**
-    *
-    *Adds a Capsule to the Stage's list of Capsules.
-    *@param capsule the Capsule to add
-    */
-    public void addCapsule(Capsule capsule) {
-        capsules[numCapsules] = capsule;
-        numCapsules++;
-    }
-
-    
-    /**
-    *
-    *Returns a String representation of the Stage object.
-    *@return a String containing the name and status of the Stage, as well as its planned and actual start and end dates
-    */
     @Override
     public String toString() {
         String status = "Active";
-        if (this.approved) {
+        if (approved) {
             status = "Approved";
-        } else if (this.actualStartDate > 0 && this.actualEndDate > 0) {
+        } else if (actualStartDate != null && actualEndDate != null) {
             status = "Completed";
-        } else if (this.plannedStartDate > 0 && this.plannedEndDate > 0) {
+        } else if (plannedStartDate != null && plannedEndDate != null) {
             status = "Planned";
         }
-        return this.name + ": " + status + " (Planned Start Date: " + formatDate(this.plannedStartDate) + ", Planned End Date: " + formatDate(this.plannedEndDate) + ", Actual Start Date: " + formatDate(this.actualStartDate) + ", Actual End Date: " + formatDate(this.actualEndDate) + ")";
+        return name + ": " + status + " (Planned Start Date: " + formatDate(plannedStartDate) + ", Planned End Date: " + formatDate(plannedEndDate) + ", Actual Start Date: " + formatDate(actualStartDate) + ", Actual End Date: " + formatDate(actualEndDate) + ")";
     }
+    
+
+    private String formatDate(Calendar calendar) {
+        if (calendar == null) {
+            return "N/A";
+        }
+        return calendar.getTime().toString();
+    }
+    
+
+
+    public String addCapsule(String id, String description, TypeCapsule type, String collaboratorName, String collaboratorJob,  String lessonLearned,  String wordsWithHashtag) {
+
+        Capsule capsule = new Capsule(id, description, type, collaboratorName, collaboratorJob, lessonLearned,  wordsWithHashtag );
+    
+        String msg = "Maximum capacity";
+        boolean stop = false;
+
+        for( int i = 0; i < capsules.length && !stop; i++ ){
+            if(capsules[i] == null){
+                capsules[i] = capsule;
+                msg = "the capsule was added";
+                stop = true;
+
+            }
+        }return msg;
+    }
+
+
+    public Capsule searchCapsule(String id){
+
+        Capsule capsule = null;
+        boolean found = false;
+        for(int i = 0; i < capsules.length && !found; i++){
+            if (capsules[i] != null && capsules[i].getId().equals(id)) {
+                capsule = capsules[i];
+                found = true;  
+            } 
+        }return capsule;
+    }
+   
+
+   
 
     
-    /**
-    *
-    *Formats a given date as a String in the format MM/YYYY.
-    *@param date the date to format
-    *@return a String representing the formatted date
-    */
-    private String formatDate(int date) {
-        
-        if (date == 0) {
-            return "";
-        } else {
-            int month = (date - 1) % 12 + 1;
-            int year = (date - 1) / 12 + 2023;
-            return String.format("%02d", month) + "/" + year;
-        }
-    }
-
-    public void addCapsule(SystemController systemController) {
-    }
+    
 
     
 

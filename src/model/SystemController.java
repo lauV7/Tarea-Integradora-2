@@ -2,182 +2,311 @@ package model;
 import java.util.Calendar;
 
 
-
-public class SystemController {
+public class SystemController{
     
     private static final int maxProjects = 10;
     private static Project[] projects;
-    private int numProjects;
+    private int technicTypeCounter = 0;
+    private int managementTYpeCounter = 0;
+    private int domainTypeCounter = 0;
+    private int experienceTypeCounter = 0;
 
-    public SystemController() {
-        SystemController.projects = new Project[maxProjects];
-        this.numProjects = 0;
-    }
-
-    public void addProject(String projectName, String clientName, Calendar plannedStartDate, Calendar plannedEndDate, double projectBudget, String greenManagerName, String greenManagerPhone, String clientManagerName, String clientManagerPhone , int [] meses) {
+    public SystemController(){
+        projects = new Project[maxProjects];
         
-        if (numProjects < projects.length) {
-            Project project = new Project(projectName, clientName, plannedStartDate, plannedEndDate, projectBudget, greenManagerName, greenManagerPhone, clientManagerName, clientManagerPhone, meses );
-            projects[numProjects] = project;
-            numProjects++;
-        } else {
-            System.out.println("Error: Maximum number of projects reached.");
+    }
+
+    public String addProject(String projectName, String clientName, Calendar plannedStartDate, Calendar plannedEndDate, double projectBudget, String greenManagerName, String greenManagerPhone, String clientManagerName, String clientManagerPhone){
+        String msg = "";
+        Project project = new Project(projectName, clientName, plannedStartDate, plannedEndDate, projectBudget, greenManagerName, greenManagerPhone, clientManagerName, clientManagerPhone);
+        int pos = getFirstValidPosition();
+        if(pos != -1){
+        projects[pos] = project;
+        }else {
+        msg = "Error: numero maximo de proyectos alcanzados.";
         }
-    }
+        return msg;
+    }     
 
-    public void completeStage(int stageIndex, int approvalDate, int actualEndDate, Stage[] stages) {
-        Stage currentStage = stages[stageIndex];
-        currentStage.setApproved(true);
-        currentStage.setActualEndDate(actualEndDate);
-        currentStage.setActive(false);
     
-        if (stageIndex < stages.length - 1) {
-            Stage nextStage = stages[stageIndex + 1];
-            nextStage.setActive(true);
-            nextStage.setActualStartDate(approvalDate);
+    public int getFirstValidPosition(){
+        int pos = -1;
+        boolean valid = false;
+        for(int i = 0; i < maxProjects && !valid; i++ ){
+            if(projects[i] == null){
+                pos = i;
+                valid = true;
+            }
         }
+        return pos;
     }
 
-    public void registerCapsule(Stage stage) {
-        stage.addCapsule(this);
+    public Project searchProject(String name){
+        Project project = null;
+        boolean found = false;
+        for(int i = 0; i < projects.length && !found; i++){
+            if (projects[i] != null && projects[i].getProjectName().equalsIgnoreCase(name)) {
+                project = projects[i];
+                found = true; 
+            } 
+        }return project;
     }
 
     
 
-    public void printLessonsLearnedForStage(String stage1) {
-        
-    
-        for (Project project : projects) {
-            if (project.getStages().equals(stage1)) {
-                for (Capsule capsule : project.getCapsules()) {
-                    System.out.println(capsule.getLessonLearned());
+    public String createdStages(String projectName, Calendar plannedStartDate, Calendar plannedEndDate, Calendar actualStartDate){
+        String msg = "";
+        Project projectFounded = searchProject(projectName);
+
+        if(projectFounded != null){
+            Stage startStage = new Stage("Start", plannedStartDate, plannedEndDate, actualStartDate);
+            boolean stageActiveStatus = startStage.getActive();
+            if(stageActiveStatus == false){
+                stageActiveStatus = true;
+                startStage.setActive(stageActiveStatus);
                 }
-            }
+            projectFounded.addStages(startStage);
+
+            Stage analysisStage = new Stage("AnalisysStage" , plannedStartDate, plannedEndDate, actualStartDate);
+            projectFounded.addStages(analysisStage);
+
+            Stage designStage = new Stage( "Design", plannedStartDate, plannedEndDate, actualStartDate);
+            projectFounded.addStages(designStage);
+
+            Stage executionStage = new Stage("Execution", plannedStartDate, plannedEndDate, actualStartDate);
+            projectFounded.addStages(executionStage);
+
+            Stage closeStage = new Stage("Close", plannedStartDate, plannedEndDate, actualStartDate);
+            projectFounded.addStages(closeStage);
+
+            Stage followAndControlStage = new Stage("FollowAndControl", plannedStartDate, plannedEndDate, actualStartDate);
+            projectFounded.addStages(followAndControlStage);
+
+            msg = "Stages register correctly";
         }
+
+        else{
+            msg = "project not found registered";
+        }
+        return msg;
+
     }
 
-    public String getProjectWithMostCapsules() {
-        String projectName = null;
-        int maxCapsules = 0;
-        for (Project project : projects) {
-            int numCapsules = 0;
-            for (Stage stage : project.getStages()) {
-                numCapsules += stage.getCapsules().length;
-            }
-            if (numCapsules > maxCapsules) {
-                maxCapsules = numCapsules;
-                projectName = project.getProjectName();
-            }
-        }
-        return projectName;
 
+   
+    public String completeStage(String projectName, String name, Calendar approvalDate, Calendar actualEndDate){
+        String msg = "";
+        Project projectFounded = searchProject(projectName);
+        Stage searchedStage = projectFounded.searchStage(name);
+        
+        
+        if(projectFounded != null){
+            Stage[] stages = projectFounded.getStages();
+            for(int i = 0; i < stages.length && searchedStage != null; i++){
+                if(searchedStage.getActive() == true){
+                    searchedStage.setApproved(true);
+                    searchedStage.setActualEndDate(actualEndDate);
+                    searchedStage.setActive(false);
+                } 
+                if(i < stages.length - 1){
+                    Stage nextStage = stages[i + 1];
+                    nextStage.setActive(true);      
+                }
+            } msg = "the stage has been completed";
+        }return msg;	
     }
 
-    public boolean checkCollaboratorRegistration(String collaboratorName) {
-        boolean registered = false;
-        for (Project project : projects) {
-            for (Stage stage : project.getStages()) {
-                for (Capsule capsule : stage.getCapsules()) {
-                    if (capsule.getCollaboratorName().equalsIgnoreCase(collaboratorName)) {
-                        registered = true;
-                        break;
+
+
+   
+    public String addCapsule(String projectName, String name, String id, String description, int capsuleTypeSelect, String collaboratorName, String collaboratorJob, String lessonLearned, String wordsWithHashtag ){
+        String msg = "";
+        Project projectFounded = searchProject(projectName);
+        Stage searchedStage = projectFounded.searchStage(name);
+        
+        if(projectFounded != null){
+            if(searchedStage != null && searchedStage.getActive() == true){
+                TypeCapsule capsuleType;
+
+                if (capsuleTypeSelect == 1) {
+                    capsuleType = TypeCapsule.TECHNIC;
+                    technicTypeCounter ++;
+
+                }else if (capsuleTypeSelect == 2) {
+                    capsuleType = TypeCapsule.MANAGEMENT;
+                    managementTYpeCounter ++;
+    
+                }else if (capsuleTypeSelect == 3) {
+                    capsuleType = TypeCapsule.DOMAIN;
+                    domainTypeCounter ++;
+                }else {
+                    capsuleType = TypeCapsule.EXPERIENCE;
+                    experienceTypeCounter ++;
+                }
+
+                searchedStage.addCapsule(id,  description, capsuleType,  collaboratorName,  collaboratorJob,  lessonLearned, wordsWithHashtag );
+                msg = "capsule register correctly";
+            
+            } else {
+			    msg = "stage not found registered";
+            } 
+        }return msg;
+    }
+
+
+
+    public String approveCapsule(String projectName, String name, String id, Calendar approvalDate){
+        String msg = "";
+        Project projectFounded = searchProject(projectName);
+        Stage searchedStage = projectFounded.searchStage(name);
+        Capsule capsule = searchedStage.searchCapsule(id);
+        boolean approvedCapsule = false;
+        boolean capsuleStateApproval = capsule.getApproved();
+        
+        if(projectFounded != null){
+            if(searchedStage != null && searchedStage.getActive() == true){
+                if(capsule != null){
+                    if(approvedCapsule != true){
+                        approvedCapsule = true;
+                        capsule.setApproved(approvedCapsule);
+                        capsule.setApprovalDate(approvalDate);
+                        msg = "Capsule approved";
+                        
+                    }else if ( capsuleStateApproval == true){
+                        msg = "Capsule has already been approved";
                     }
                 }
-                if (registered) {
-                    break;
-                }
+            }else {
+                msg = "stage not found registered or is not acive";
             }
-            if (registered) {
-                System.out.println(collaboratorName + " han sido registradas las cápsulas en el proyecto " + project.getProjectName());
-                break;
-            }
-        }
-        if (!registered) {
-            System.out.println(collaboratorName + " no han sido registradas ninguna capsula en un proyecto.");
-        }
-        return registered;
+            
+        }return msg;
     }
 
 
+
+    public String publishCapsule(String projectName, String name, String id){
+        String msg = "";
+        Project projectFounded = searchProject(projectName);
+        Stage searchedStage = projectFounded.searchStage(name);
+        Capsule capsule = searchedStage.searchCapsule(id);
+
+        if(projectFounded != null){
+            if(searchedStage != null && searchedStage.getActive() == true){
+                if(capsule != null){
+                    if(capsule.getApproved() == true){
+                            capsule.setPostStatus(true);
+                            msg = "url de la capsula: https://youtube.com/shorts/SM0c_cAQkl8?feature=share";
+                    }else{
+                        msg = "capsule is not approved";
+                    }
+                }else{
+                    msg = "Capsule not found registered"; 
+                }
+            }else{
+                msg = "stage not found registered or is not acive";
+            }
+        }return msg;
+    }
+
+
+    public String numberCapsulesRegisteredByType(){
+        String msg = "Number of technic capsules: " + technicTypeCounter + "\n" + "Number of management capsules: " + managementTYpeCounter + "\n" + "Number of domain capsules: " + domainTypeCounter + "\n" + "Number of experience capsules: " + experienceTypeCounter;
+        return msg;
+    }
+
+    
+    
+    public String printLessonsLearnedForStage(String projectName, String name){
+        String msg = "";
+        Project projectFounded = searchProject(projectName);
+        Stage searchedStage = projectFounded.searchStage(name);
+        
+        if(projectFounded != null){
+            if(searchedStage!= null && searchedStage.getActive() == true){
+                Capsule[] capsules = searchedStage.getCapsules();
+                for(int i = 0; i < capsules.length ; i++){
+                    if(capsules[i] != null){
+                        msg += capsules[i].getLessonLearned() + "\n";
+                    }
+                }
+            }
+        }return msg;
+    }
+
+
+
+    public String getProjectWithMostCapsules(){
+        String msg = " ";
+        int maxCapsules = 0;
+
+        for(int i = 0; i < projects.length; i ++){
+            if(projects[i] != null){
+                int numCapsules = 0;
+                for(int j = 0; j < projects[i].getStages().length; j++ ){
+                    if(projects[i].getStages()[j] != null){
+                        for(int k = 0; k < projects[i].getStages()[j].getCapsules().length; k++){
+                            Capsule[] capsules = projects[i].getStages()[j].getCapsules();
+                            numCapsules += capsules.length;
+                        }
+                        if (numCapsules > maxCapsules) {
+                            maxCapsules = numCapsules;
+                            msg = "The project with the most capsules is: " + projects[i].getProjectName();
+                        }
+                    }
+                }
+            }
+        }return msg;
+    }
+
+   
     
 
-    public static void searchCapsulesByHashtag(String hashtag) {
-        System.out.println("Capsules containing #" + hashtag + ":");
-    
-        for (Project project : projects) {
-            for (Stage stage : project.getStages()) {
-                for (Capsule capsule : stage.getCapsules()) {
-                    if (capsule.getType().equals("Approved and Published")) {
-                        String[] hashtags = capsule.getDescription().split(" ");
-                        for (String h : hashtags) {
-                            if (h.startsWith("#") && h.contains(hashtag)) {
-                                System.out.println(capsule.toString());
-                                break;
+    public String checkCollaboratorRegisteredCapsules(String collaboratorName){
+        String msg = " ";
+
+        for(int i = 0; i < maxProjects; i++){
+            if(projects[i] != null){
+                for(int j = 0; j < projects[i].getStages().length; j++){
+                    if(projects[i].getStages()[j] != null){
+                        for(int k = 0; k < projects[i].getStages()[j].getCapsules().length; k++){
+                            if(projects[i].getStages()[j].getCapsules()[k] != null){
+                                if(projects[i].getStages()[j].getCapsules()[k].getCollaboratorName().equalsIgnoreCase(collaboratorName)){
+                                    msg = "The collaborator has registered capsules in that project";
+                                }
+                                else{
+                                    msg = "The collaborator has not registereds capsules in that project ";
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+        }return msg;
     }
 
-    public static void countCapsulesByType() {
-        int technicalCount = 0;
-        int managementCount = 0;
-        int domainCount = 0;
-        int experienceCount = 0;
     
-        for (Project project : projects) {
-            for (Stage stage : project.getStages()) {
-                for (Capsule capsule : stage.getCapsules()) {
-                    switch (capsule.getType()) {
-                        case "Technical":
-                            technicalCount++;
-                            break;
-                        case "Management":
-                            managementCount++;
-                            break;
-                        case "Domain":
-                            domainCount++;
-                            break;
-                        case "Experience":
-                            experienceCount++;
-                            break;
+
+    
+    public String searchCapsulesByHashtag(String wordsWithHashtag){
+        String msg = "";
+
+        for(int i = 0; i < projects.length; i++){
+            if(projects[i] != null){
+                Stage[] stages = projects[i].getStages();
+                for(int j = 0; j++ < stages.length; j++){
+                    // stage.get(j)
+                    if(stages[j] != null){
+                        Capsule[] capsules = stages[j].getCapsules();
+                        for(int k = 0; k < capsules.length; k++){
+                            if(capsules[k] != null && capsules[k].getApproved() == true && capsules[k].getPublishedState() == true){
+                                msg += capsules[k].searchCapsuleByHashtag(wordsWithHashtag);
+
+                            }
+                        }
                     }
                 }
             }
-        }
-    
-        System.out.println("Capsules by type:");
-        System.out.println("Technical: " + technicalCount);
-        System.out.println("Management: " + managementCount);
-        System.out.println("Domain: " + domainCount);
-        System.out.println("Experience: " + experienceCount);
-    }
-    
-    public void publishCapsule(Capsule capsule) {
-        if (capsule.getType().equals("Organizational Interest") && capsule.getApproved().equals("Approved")) {
-            capsule.setApproved("Approved and Published");
-            System.out.println("Capsule has been published: youtube.com/watch?v=EsfSuL-VFBw&list=PLPsYW7baIENblzkBM6EyewRZExc1Jzt_X&ab_channel=LuisFonsiVEVO");
-        } else {
-            System.out.println("Capsule cannot be published.");
-        }
-    }
-
-    public void registerCapsule(int capsuleId, String capsuleDescription, String capsuleType, String collaboratorName,
-            String collaboratorJob) {
-    }
-
-   
-
-   
-    
-    
-    
-    
-    
-    
-    
-
-    
+        }return msg;
+    }   
 }
